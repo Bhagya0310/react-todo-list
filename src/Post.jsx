@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// import marked from 'marked';
 
 function Post() {
   const [title, setTitle] = useState('');
