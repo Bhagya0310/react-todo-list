@@ -1,52 +1,62 @@
-import { useEffect, useState } from "react"
-import { NewTodoForm } from "./NewTodoForm"
-import "./styles.css"
-import { TodoList } from "./TodoList"
+import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import './App.css';
 
-export default function App() {
-  const [todos, setTodos] = useState(() => {
-    const localValue = localStorage.getItem("ITEMS")
-    if (localValue == null) return []
+function App() {
+  const [tasks, setTasks] = useState([]);
+  const [taskName, setTaskName] = useState("");
+  const [taskDescription, setTaskDescription] = useState("");
 
-    return JSON.parse(localValue)
-  })
+  const addPost = () => {
+    if (!taskName.trim() || !taskDescription.trim()) return;
 
-  useEffect(() => {
-    localStorage.setItem("ITEMS", JSON.stringify(todos))
-  }, [todos])
+    const newTask = {
+      name: taskName,
+      description: taskDescription
+    };
 
-  function addTodo(title) {
-    setTodos(currentTodos => {
-      return [
-        ...currentTodos,
-        { id: crypto.randomUUID(), title, completed: false },
-      ]
-    })
-  }
-
-  function toggleTodo(id, completed) {
-    setTodos(currentTodos => {
-      return currentTodos.map(todo => {
-        if (todo.id === id) {
-          return { ...todo, completed }
-        }
-
-        return todo
-      })
-    })
-  }
-
-  function deleteTodo(id) {
-    setTodos(currentTodos => {
-      return currentTodos.filter(todo => todo.id !== id)
-    })
-  }
+    setTasks([...tasks, newTask]);
+    setTaskName("");
+    setTaskDescription("");
+  };
 
   return (
-    <>
-      <NewTodoForm onSubmit={addTodo} />
-      <h1 className="header">Todo List</h1>
-      <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
-    </>
-  )
+    <div className="post-content">
+      <h3>Title</h3>
+      <div className="title-content">
+        <input
+          type="text"
+          placeholder="Enter your title"
+          value={taskName}
+          onChange={(e) => setTaskName(e.target.value)}
+        />
+      </div>
+
+      <h3>Post Content(Text Area) </h3>
+      <div className="description-content">
+        <textarea
+          placeholder="Enter your description"
+          value={taskDescription}
+          onChange={(e) => setTaskDescription(e.target.value)}
+        />
+      </div>
+
+      <div className="post-button">
+        <button onClick={addPost}>Add Post</button>
+      </div>
+
+      <div className="list-of-tasks">
+        <ul>
+          {tasks.map((task, index) => (
+            <li key={index}>
+              <strong>{task.name}</strong>: 
+              <ReactMarkdown>{task.description}</ReactMarkdown>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
 }
+
+export default App;
